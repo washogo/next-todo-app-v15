@@ -6,7 +6,10 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 /**
- * メールアドレスとパスワードによる認証によって生成されたコードを取得し、セッションの取得と設定を行う
+ * redirectToまたはemailRedirectToを持つ認証メソッドの場合はコードの交換が必要となる
+ * @see {@link https://supabase.com/docs/guides/auth/auth-helpers/nextjs?queryGroups=language&language=ts#migration-guide}
+ * @see {@link https://supabase.com/docs/guides/auth/passwords}
+ * @see {@link https://supabase.com/docs/guides/auth/auth-email-passwordless}
  * @param request リクエスト
  * @returns
  */
