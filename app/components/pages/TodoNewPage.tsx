@@ -1,12 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-// import { useSupabase } from "../supabase-provider";
 import useStore from "../../../store";
 import { TodoForm } from "../organisms/TodoForm";
+import { getBaseUrl } from "@/utils/getBaseUrl";
 
 const TodoNewPage = () => {
-  // const { supabase } = useSupabase();
   const router = useRouter();
   const { user } = useStore();
 
@@ -24,7 +23,8 @@ const TodoNewPage = () => {
         comment: comment,
         user_id: user.id,
       };
-      const response = await fetch(`/api/todo`, {
+      const baseUrl = await getBaseUrl();
+      const response = await fetch(`${baseUrl}/api/todo`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(insertTodo),

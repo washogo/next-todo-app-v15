@@ -1,22 +1,30 @@
+import { createClient } from '@/utils/supabase-route-handler';
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase-server';
+// import { createClient } from '@/utils/supabase-server';
 
 export async function GET(req: NextRequest) {
   const supabase = createClient();
-  const { searchParams } = new URL(req.url);
-  const userId = searchParams.get("userId");
+  try {
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get('userId');
 
-  if (!userId) return NextResponse.json({ error: 'User ID is required' }, { status: 401 });
+    if (!userId) return NextResponse.json({ error: 'ユーザーIDが必要です' }, { status: 401 });
 
-  const { data: todos, error } = await supabase
-    .from('todos')
-    .select()
-    .eq('user_id', userId!)
-    .order('created_at', { ascending: false });
+    const { data: todos, error } = await supabase
+      .from('todos')
+      .select()
+      .eq('user_id', userId!)
+      .order('created_at', { ascending: false });
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 404 });
+    if (!todos) return NextResponse.json({ error: error.message }, { status: 404 });
 
-  return NextResponse.json(todos);
+    return NextResponse.json(todos);
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : '予期せぬエラーが発生しました' },
+      { status: 500 }
+    );
+  }
 }
 
 export async function POST(req: Request) {

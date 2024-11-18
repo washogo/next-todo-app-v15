@@ -1,36 +1,32 @@
-import { notFound } from "next/navigation";
+import { notFound } from 'next/navigation';
 // import { createClient } from "../../../../utils/supabase-server";
 
-import TodoEdit from "../../../components/pages/TodoEditPage";
+import TodoEdit from '../../../components/pages/TodoEditPage';
+import { getBaseUrl } from '@/utils/getBaseUrl';
+import { TodoApiErrorResponse, TodoApiSuccessResponse } from '@/utils/response.types';
 
 type PageProps = {
-  params: Promise<{ todoId: string }>
+  params: Promise<{ todoId: string }>;
 };
 
 // TODO編集ページ
 const TodoEditPage = async ({ params }: PageProps) => {
-  const response = await fetch(`/api/todo/${(await params).todoId}`, { method: "GET" });
+  const baseUrl = await getBaseUrl();
+  const response = await fetch(`${baseUrl}/api/todo/${(await params).todoId}`, { method: 'GET' });
 
   if (!response.ok) {
-    const errorData = await response.json();
-    alert(errorData.error || "取得に失敗しました。");
-    return;
+    throw new Error('取得に失敗しました。');
   }
-  const todo = await response.json();
-
-  // const supabase = createClient();
-
-  // // TODO詳細取得
-  // const { data: todo } = await supabase
-  //   .from("todos")
-  //   .select()
-  //   .eq("id", params.todoId)
-  //   .single();
 
   // TODOが存在しない場合
-  if (!todo) return notFound();
+  if (response.status === 404) {
+    const res: TodoApiErrorResponse = await response.json();
+    console.error(res.error);
+    return notFound();
+  }
 
-  return <TodoEdit todo={todo} />;
+  const res: TodoApiSuccessResponse = await response.json();
+  return <TodoEdit todo={res} />;
 };
 
 export default TodoEditPage;
