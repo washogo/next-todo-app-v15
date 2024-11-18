@@ -10,13 +10,11 @@ import { createClient } from '@/utils/supabase-client';
 const SupabaseListener = ({ serverAccessToken }: { serverAccessToken?: string }) => {
   const router = useRouter();
   const { setUser } = useStore();
-  // const { supabase } = useSupabase()
   const supabase = createClient();
 
   useEffect(() => {
     // セッション情報取得
     const getSession = async () => {
-      // const { data } = await supabase.auth.getSession()
       const { data } = await supabase.auth.getSession();
 
       if (data.session) {
@@ -39,7 +37,7 @@ const SupabaseListener = ({ serverAccessToken }: { serverAccessToken?: string })
       // アクセストークンチェック
       if (session?.access_token !== serverAccessToken) {
         // キャッシュクリア
-        router.refresh()
+        router.refresh();
       }
     });
 
