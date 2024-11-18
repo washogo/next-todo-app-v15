@@ -5,7 +5,11 @@ import { NextResponse } from 'next/server'
 
 import type { NextRequest } from 'next/server'
 
-
+/**
+ * メールアドレスとパスワードによる認証によって生成されたコードを取得し、セッションの取得と設定を行う
+ * @param request リクエスト
+ * @returns
+ */
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
