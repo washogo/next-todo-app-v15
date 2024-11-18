@@ -14,8 +14,8 @@ export const middleware = async (req: NextRequest) => {
     data: { session },
   } = await supabase.auth.getSession();
 
-  // 未認証状態で新規投稿画面に遷移した場合は、ログイン画面にリダイレクト
-  if (!session && req.nextUrl.pathname.startsWith('/blog/new')) {
+  // セッションがない場合はログインページにリダイレクト
+  if (!session && req.nextUrl.pathname.startsWith('/todo')) {
     const redirectUrl = req.nextUrl.clone();
     redirectUrl.pathname = '/auth/login';
     return NextResponse.redirect(redirectUrl);
