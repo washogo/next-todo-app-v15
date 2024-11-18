@@ -1,6 +1,5 @@
 import { createClient } from '@/utils/supabase-route-handler';
 import { NextRequest, NextResponse } from 'next/server';
-// import { createClient } from '@/utils/supabase-server';
 
 export async function GET(req: NextRequest) {
   const supabase = createClient();
@@ -29,10 +28,21 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: Request) {
   const supabase = createClient();
-  const inserts = await req.json();
-  const { error } = await supabase.from('todos').insert(inserts);
+  try {
+    const inserts = await req.json();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    if (!inserts) return NextResponse.json({ error: 'データがありません' }, { status: 400 });
+    // TODO: バリデーション処理追加
 
-  return NextResponse.json({ message: 'Todo insert successfully' });
+    const res = await supabase.from('todos').insert(inserts);
+
+    if (res.error) return NextResponse.json({ error: res.error.message }, { status: res.status });
+
+    return NextResponse.json({ message: 'TODOの作成に成功しました' });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : '予期せぬエラーが発生しました' },
+      { status: 500 }
+    );
+  }
 }

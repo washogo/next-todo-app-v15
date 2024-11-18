@@ -13,6 +13,7 @@ export const revalidate = 0;
 
 // レイアウト
 const RootLayout = async ({ children }: { children: React.ReactNode }) => {
+  // TODO: cookieの取得で警告が発生する
   const supabase = createClient();
 
   // セッション情報取得

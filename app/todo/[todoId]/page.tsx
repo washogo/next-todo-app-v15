@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-// import { createClient } from "../../../utils/supabase-server";
 import TodoDetail from '../../components/pages/TodoDetailPage';
 import type { TodoListType } from '../../../utils/todo.types';
 import { getBaseUrl } from '@/utils/getBaseUrl';

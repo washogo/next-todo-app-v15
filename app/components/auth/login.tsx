@@ -2,16 +2,13 @@
 
 import { useRef, FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
-// import { useSupabase } from '../supabase-provider';
 
 import Link from 'next/link';
 import Loading from '../../loading';
-// import supabase from '@/utils/supabase-main';
 import { createClient } from '@/utils/supabase-client';
 
 // ログイン
 const Login = () => {
-  // const { supabase } = useSupabase();
   const router = useRouter();
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);

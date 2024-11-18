@@ -1,17 +1,14 @@
 import { TodoApiResponse } from '@/utils/response.types';
 import { createClient } from '@/utils/supabase-route-handler';
 import { NextResponse } from 'next/server';
-// import { createClient } from '@/utils/supabase-server';
 
-export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }): Promise<NextResponse<TodoApiResponse>> {
+export async function GET(
+  _: Request,
+  { params }: { params: Promise<{ id: string }> }
+): Promise<NextResponse<TodoApiResponse>> {
   const supabase = createClient();
-  const todoId = (await params).id
   try {
-    const { data, error } = await supabase
-      .from('todos')
-      .select('*')
-      .eq('id', todoId)
-      .single();
+    const { data, error } = await supabase.from('todos').select('*').eq('id', (await params).id).single();
 
     if (!data) return NextResponse.json({ error: error.message }, { status: 404 });
 
@@ -26,26 +23,46 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const supabase = createClient();
-  const updates = await req.json();
-  const { data, error } = await supabase
-    .from('todos')
-    .update(updates)
-    .eq('id', (await params).id)
-    .single();
+  try {
+    const updates = await req.json();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    if (!updates) return NextResponse.json({ error: 'データがありません' }, { status: 400 });
+    // TODO: バリデーション処理追加
 
-  return NextResponse.json(data);
+    const res = await supabase
+      .from('todos')
+      .update(updates)
+      .eq('id', (await params).id)
+      .single();
+
+    if (res.error) return NextResponse.json({ error: res.error.message }, { status: res.status });
+
+    return NextResponse.json(res.data);
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : '予期せぬエラーが発生しました' },
+      { status: 500 }
+    );
+  }
 }
 
-export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
   const supabase = createClient();
-  const { error } = await supabase
-    .from('todos')
-    .delete()
-    .eq('id', (await params).id);
+  try {
+    // TODO: バリデーション処理追加
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    const res = await supabase
+      .from('todos')
+      .delete()
+      .eq('id', (await params).id);
 
-  return NextResponse.json({ message: 'Todo deleted successfully' });
+    if (res.error) return NextResponse.json({ error: res.error.message }, { status: res.status });
+
+    return NextResponse.json({ message: 'TODOの削除に成功しました' });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : '予期せぬエラーが発生しました' },
+      { status: 500 }
+    );
+  }
 }
